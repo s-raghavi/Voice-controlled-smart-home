@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Voice Controlled Smart Home</title>
+
+  <style>
+
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+
+    #status { font-size: 1.2em; margin-top: 20px; }
+
+    .device { margin: 20px; padding: 10px; border: 1px solid #ccc; display: inline-block; width: 200px; border-radius: 10px; }
+
+    .on { background-color: lightgreen; }
+
+    .off { background-color: lightcoral; }
+
+  </style>
+
+</head>
+
+<body>
+
+  <h1>Voice Controlled Smart Home</h1>
+
+  <button onclick="startRecognition()">Activate Voice Control</button>
+
+  <div id="status">Say commands like "Turn on the light" or "Turn off the fan"</div>
+
+  <div class="device" id="light">Light: <span class="state">Off</span></div>
+
+  <div class="device" id="fan">Fan: <span class="state">Off</span></div>
+
+  <script>
+
+    const light = document.getElementById('light');
+
+    const fan = document.getElementById('fan');
+
+    function updateDevice(device, state) {
+
+      const el = document.getElementById(device);
+
+      el.classList.remove('on', 'off');
+
+      el.classList.add(state.toLowerCase());
+
+      el.querySelector('.state').textContent = state;
+
+    }
+
+    function startRecognition() {
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+
+        alert("Speech Recognition not supported in this browser.");
+
+        return;
+
+      }
+
+      const recognition = new SpeechRecognition();
+
+      recognition.lang = 'en-US';
+
+      recognition.interimResults = false;
+
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      document.getElementById('status').textContent = "Listening...";
+
+      recognition.onresult = (event) => {
+
+        const command = event.results[0][0].transcript.toLowerCase();
+
+        document.getElementById('status').textContent = `You said: "${command}"`;
+
+        if (command.includes("light") && command.includes("on")) {
+
+          updateDevice('light', 'On');
+
+        } else if (command.includes("light") && command.includes("off")) {
+
+          updateDevice('light', 'Off');
+
+        } else if (command.includes("fan") && command.includes("on")) {
+
+          updateDevice('fan', 'On');
+
+        } else if (command.includes("fan") && command.includes("off")) {
+
+          updateDevice('fan', 'Off');
+
+        } else {
+
+          document.getElementById('status').textContent = "Command not recognized.";
+
+        }
+
+      };
+
+      recognition.onerror = (event) => {
+
+        document.getElementById('status').textContent = 'Error occurred: ' + event.error;
+
+      };
+
+    }
+
+  </script>
+
+</body>
+
+</html>
